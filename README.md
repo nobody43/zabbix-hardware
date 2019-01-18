@@ -1,5 +1,8 @@
 # zabbix-hardware
-Work in progress
+Current features:
+- RAM info for Windows through WMI
+
+![ram-items](https://raw.githubusercontent.com/nobodysu/zabbix-hardware/master/screenshots/hardware-ram-items.png)
 ## Testing
 ```bash
 zabbix_get -s 192.0.2.1 -k hw.ram.discovery[get,"Example host"]
