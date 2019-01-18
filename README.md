@@ -1,6 +1,6 @@
 # zabbix-hardware
 Current features:
-- RAM info for Windows through WMI
+- RAM hardware info for Windows through WMI
 
 ![ram-items](https://raw.githubusercontent.com/nobodysu/zabbix-hardware/master/screenshots/hardware-ram-items.png)
 ## Testing
