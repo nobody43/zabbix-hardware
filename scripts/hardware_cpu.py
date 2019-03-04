@@ -36,7 +36,7 @@ keysandRegexp = (
 	('hw.cpu.UpgradeMethod',                r'^UpgradeMethod\=(.+)'),
     ('hw.cpu.VoltageCaps',                  r'^VoltageCaps\=(.+)'),
 )
-
+ 
 #Info from https://docs.microsoft.com/en-us/windows/desktop/cimwin32prov/win32-processor
 architectureType = (
 	('0', 'x86'),
