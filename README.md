@@ -1,8 +1,10 @@
 # zabbix-hardware
 Current features:
-- RAM hardware info for Windows through WMI
 - CPU hardware info with multiprocessor support for Windows through WMI
+- RAM hardware info for Windows through WMI
 - BIOS hardware info for Windows through WMI
+
+Requires Python 31+. It must be installed for all users and mentioned in PATH.
 
 ## Screenshots
 [RAM Latest data](https://raw.githubusercontent.com/nobodysu/zabbix-hardware/master/screenshots/hardware-ram-items.png)
