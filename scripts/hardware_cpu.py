@@ -1,13 +1,20 @@
+## Installation instructions: https://github.com/nobodysu/zabbix-hardware ##
+
 senderPyPath = r'C:\zabbix-agent\scripts\sender_wrapper.py'
 
 agentConf = r'C:\zabbix_agentd.conf'
 
 senderPath = r'C:\zabbix-agent\bin\win32\zabbix_sender.exe'
 
+## Advanced configuration ##
+
 timeout = '80'
 
-unknownCPUshift = 1000
+cmd = ['wmic', 'CPU', 'list', 'full']
 
+globalTimeout = 25
+unknownCPUshift = 1000
+ 
 keysandRegexp = (
     ('hw.cpu.AddressWidth',                 r'^AddressWidth\=(.+)'),
     ('hw.cpu.Architecture',                 r'^Architecture\=(.+)'),
@@ -261,10 +268,12 @@ keysandParameters = (
     ('hw.cpu.VoltageCaps',                  voltageCaps),
 )
 
+## End of configuration ##
+
 import sys
 import re
 import subprocess
-from sender_wrapper import (processData)
+from sender_wrapper import (fail_ifNot_Py3, removeQuotes, processData)
 
 
 def findValues(cpuNum, cpu_out):
@@ -287,29 +296,29 @@ def findValues(cpuNum, cpu_out):
             sender.append('"%s" %s[cpu%s] "%s"' %(host, key, cpuNum, val))
 
     return sender
-    
-
-def removeQuotes(s):
-    quotes = ["'", '"']
-
-    for i in quotes:
-        s = s.replace(i, '')
-
-    return s
 
 
-def findOutput():
+def findOutput(cmd_):
+
+    err = None
 
     try:
-        p = subprocess.check_output(['wmic', 'CPU', 'list', 'full'], universal_newlines=True)
-    except:
-        p = ""
-        
-        if sys.argv[1] == 'getverb':
-            print('Error calling wmic command. Terminating.')
-            sys.exit(1)
+        if      (sys.version_info.major == 3 and
+                 sys.version_info.minor <= 2):
 
-    return p
+            p = subprocess.check_output(cmd_, universal_newlines=True)
+
+            err = 'OLD_PYTHON32_OR_LESS'
+        else:
+            p = subprocess.check_output(cmd_, universal_newlines=True, timeout=globalTimeout)
+
+    except subprocess.TimeoutExpired:
+        err = 'TIMEOUT'
+
+    except:
+        p = ''   
+
+    return (p, err)
 
 
 def splitCPUblocks(p):
@@ -339,13 +348,16 @@ def findCPUnum(cpu_out):
 
 
 if __name__ == '__main__':
+
+    fail_ifNot_Py3()
     
     host = str(sys.argv[2])
 
     jsonData = []
     senderData = []
     
-    p_out = findOutput()
+    p_out_once = findOutput(cmd)
+    p_out = p_out_once[0]
     
     for n, i in enumerate(splitCPUblocks(p_out)):
         
@@ -361,5 +373,6 @@ if __name__ == '__main__':
             senderData.extend(cpuValues)
             jsonData.append({'{#CPUNUM}':cpu})
 
-    link = 'norepoyet'
-    processData(senderData, jsonData, agentConf, senderPyPath, senderPath, timeout, host, link)
+    link = 'https://github.com/nobodysu/zabbix-hardware'
+    sendStatusKey = 'hw.cpu.info[SendStatus]'
+    processData(senderData, jsonData, agentConf, senderPyPath, senderPath, timeout, host, link, sendStatusKey)
