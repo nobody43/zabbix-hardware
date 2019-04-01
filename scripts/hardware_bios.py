@@ -1,41 +1,44 @@
+## Installation instructions: https://github.com/nobodysu/zabbix-hardware ##
+
 senderPyPath = r'C:\zabbix-agent\scripts\sender_wrapper.py'
 
 agentConf = r'C:\zabbix_agentd.conf'
 
 senderPath = r'C:\zabbix-agent\bin\win32\zabbix_sender.exe'
 
-keysandRegexp = (
-                    ('hw.bios.BiosCharacteristics',     r'^BiosCharacteristics\=(.+)'),
-                    ('hw.bios.BuildNumber',             r'^BuildNumber\=(.+)'),
-                    ('hw.bios.CodeSet',                 r'^CodeSet\=(.+)'),
-                    ('hw.bios.CurrentLanguage',         r'^CurrentLanguage\=(.+)'),
-                    ('hw.bios.Description',             r'^Description\=(.+)'),
-                    ('hw.bios.IdentificationCode',      r'^IdentificationCode\=(.+)'),
-                    ('hw.bios.InstallableLanguages',    r'^InstallableLanguages\=(.+)'),
-                    ('hw.bios.InstallDate',             r'^InstallDate\=(.+)'),
-                    ('hw.bios.LanguageEdition',         r'^LanguageEdition\=(.+)'),
-                    ('hw.bios.ListOfLanguages',         r'^ListOfLanguages\=(.+)'),
-                    ('hw.bios.Manufacturer',            r'^Manufacturer\=(.+)'),
-                    ('hw.bios.Name',                    r'^Name\=(.+)'),
-                    ('hw.bios.OtherTargetOS',           r'^OtherTargetOS\=(.+)'),
-                    ('hw.bios.PrimaryBIOS',             r'^PrimaryBIOS\=(.+)'),
-                    ('hw.bios.ReleaseDate',             r'^ReleaseDate\=(.+)'),
-                    ('hw.bios.SerialNumber',            r'^SerialNumber\=(.+)'),
-                    ('hw.bios.SMBIOSBIOSVersion',       r'^SMBIOSBIOSVersion\=(.+)'),
-                    ('hw.bios.SMBIOSMajorVersion',      r'^SMBIOSMajorVersion\=(.+)'),
-                    ('hw.bios.SMBIOSMinorVersion',      r'^SMBIOSMinorVersion\=(.+)'),
-                    ('hw.bios.SMBIOSPresent',           r'^SMBIOSPresent\=(.+)'),
-                    ('hw.bios.SoftwareElementID',       r'^SoftwareElementID\=(.+)'),
-                    ('hw.bios.SoftwareElementState',    r'^SoftwareElementState\=(.+)'),
-                    ('hw.bios.Status',                  r'^Status\=(.+)'),
-                    ('hw.bios.TargetOperatingSystem',   r'^TargetOperatingSystem\=(.+)'), 
-                    ('hw.bios.Version',                 r'^Version\=(.+)'),
-                )
+## Advanced configuration ##
 
-import sys
-import re
-import subprocess
-from sender_wrapper import processData
+cmd = ['wmic','BIOS','list','full']
+
+globalTimeout = 25
+
+keysandRegexp = (
+    ('hw.bios.BiosCharacteristics',     r'^BiosCharacteristics\=(.+)'),
+    ('hw.bios.BuildNumber',             r'^BuildNumber\=(.+)'),
+    ('hw.bios.CodeSet',                 r'^CodeSet\=(.+)'),
+    ('hw.bios.CurrentLanguage',         r'^CurrentLanguage\=(.+)'),
+    ('hw.bios.Description',             r'^Description\=(.+)'),
+    ('hw.bios.IdentificationCode',      r'^IdentificationCode\=(.+)'),
+    ('hw.bios.InstallableLanguages',    r'^InstallableLanguages\=(.+)'),
+    ('hw.bios.InstallDate',             r'^InstallDate\=(.+)'),
+    ('hw.bios.LanguageEdition',         r'^LanguageEdition\=(.+)'),
+    ('hw.bios.ListOfLanguages',         r'^ListOfLanguages\=(.+)'),
+    ('hw.bios.Manufacturer',            r'^Manufacturer\=(.+)'),
+    ('hw.bios.Name',                    r'^Name\=(.+)'),
+    ('hw.bios.OtherTargetOS',           r'^OtherTargetOS\=(.+)'),
+    ('hw.bios.PrimaryBIOS',             r'^PrimaryBIOS\=(.+)'),
+    ('hw.bios.ReleaseDate',             r'^ReleaseDate\=(.+)'),
+    ('hw.bios.SerialNumber',            r'^SerialNumber\=(.+)'),
+    ('hw.bios.SMBIOSBIOSVersion',       r'^SMBIOSBIOSVersion\=(.+)'),
+    ('hw.bios.SMBIOSMajorVersion',      r'^SMBIOSMajorVersion\=(.+)'),
+    ('hw.bios.SMBIOSMinorVersion',      r'^SMBIOSMinorVersion\=(.+)'),
+    ('hw.bios.SMBIOSPresent',           r'^SMBIOSPresent\=(.+)'),
+    ('hw.bios.SoftwareElementID',       r'^SoftwareElementID\=(.+)'),
+    ('hw.bios.SoftwareElementState',    r'^SoftwareElementState\=(.+)'),
+    ('hw.bios.Status',                  r'^Status\=(.+)'),
+    ('hw.bios.TargetOperatingSystem',   r'^TargetOperatingSystem\=(.+)'), 
+    ('hw.bios.Version',                 r'^Version\=(.+)'),
+)
 
 #Info from https://docs.microsoft.com/en-us/windows/desktop/cimwin32prov/win32-bios
 biosCharacteristics = (
@@ -153,21 +156,34 @@ targetOS = (
     ('61', 'TPF'),
 )
 
-def removeQuotes(s):
-    quotes = ["'", '"']
+## End of configuration ##
 
-    for i in quotes:
-        s = s.replace(i, '')
+import sys
+import re
+import subprocess
+from sender_wrapper import (fail_ifNot_Py3, processData, removeQuotes)
 
-    return s
+def get_output(cmd_):
 
-def get_output():
+    err = None
+
     try:
-        p = subprocess.check_output(['wmic','BIOS','list','full'], universal_newlines=True)
-    except:
-        p = ""
+        if      (sys.version_info.major == 3 and
+                 sys.version_info.minor <= 2):
 
-    return p
+            p = subprocess.check_output(cmd_, universal_newlines=True)
+
+            err = 'OLD_PYTHON32_OR_LESS'
+        else:
+            p = subprocess.check_output(cmd_, universal_newlines=True, timeout=globalTimeout)
+
+    except subprocess.TimeoutExpired:
+        err = 'TIMEOUT'
+
+    except:
+        p = ''
+
+    return (p, err)
 
     
 def findValues(p):
@@ -203,16 +219,22 @@ def findValues(p):
                         val = i[1]
 
             sender.append('"%s" %s "%s"' % (host, key, val))
+
     return sender
 
 
 if __name__ == '__main__':
+
+    fail_ifNot_Py3()
+
     host = str(sys.argv[2])
 
-    p_out = get_output()
+    p_out_once = get_output(cmd)
+    p_out = p_out_once[0]
     senderData = findValues(p_out)
     
     timeout = '0'
 
     link = 'https://github.com/nobodysu/zabbix-hardware'
-    processData(senderData, '', agentConf, senderPyPath, senderPath, timeout, host, link)
+    sendStatusKey = 'hw.bios.info[SendStatus]'
+    processData(senderData, '', agentConf, senderPyPath, senderPath, timeout, host, link, sendStatusKey)
