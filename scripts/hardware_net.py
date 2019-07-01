@@ -19,7 +19,7 @@ keysAndRegexps = (
     ('hw.net.wmi.Speed',        r'^Speed=(\d+)'),
     ('hw.net.wmi.MACAddress',   r'^MACAddress=(.+)'),
     ('hw.net.wmi.ProductName',  r'^ProductName=(.+)'),
-#    ('hw.net.wmi.DeviceID',     r'^DeviceID=(\d+)'),
+    ('hw.net.wmi.AdapterType',  r'^AdapterType=(.+)'),
 )
 
 ignoredServiceNames = (
@@ -33,12 +33,13 @@ speedFormat = (
     ('^100(?:\s+)?Mb',       100000000),
     ('^1(?:\.0)?(?:\s+)?Gb', 1000000000),
     ('^10(?:\s+)?Gb',        10000000000),
+    ('^25(?:\s+)?Gb',        25000000000),
     ('^40(?:\s+)?Gb',        40000000000),
     ('^50(?:\s+)?Gb',        50000000000),
     ('^100(?:\s+)?Gb',       100000000000),
 )
 
-maxSpeedExclusions = (
+manualMaxSpeed = (
     (r'NVIDIA nForce 10/100/1000 Mbps Ethernet', 1000000000),
 )
 
@@ -196,6 +197,8 @@ def findModeValues_Any(modes_, ifID):
                 lastValue == '1.0') and
                 rSpeed    == '10'):
             speed = 10000000000
+        elif    rSpeed    == '25':
+            speed = 25000000000
         elif    rSpeed    == '40':
             speed = 40000000000
         elif    rSpeed    == '50':
@@ -213,7 +216,7 @@ def findModeValues_Any(modes_, ifID):
         
     return (sender, actualModes)
 
-    
+
 def parseModes(modes_, ID):
     json = []
     sender = []
@@ -227,37 +230,36 @@ def parseModes(modes_, ID):
     return(json, sender)
 
 
-def isDegraded(modes, currentSpeed_, block_):
+def findMaxSpeed(modes_, block_):
 
-    isSpecificProduct = findSpecificMaxSpeed(block_)
-    if isSpecificProduct:
-        maxSpeed = isSpecificProduct
-    else:
+    isManualProduct = findManualMaxSpeed(block_)
+    if isManualProduct:
+        maxSpeed = isManualProduct
+    elif modes_:
         speeds = []
-        for i in modes:
+        for i in modes_:
             speeds.append(i[2])
         speeds.sort()
         
         maxSpeed = max(speeds)
-
-    if maxSpeed == currentSpeed_:
-        return False
     else:
-        return True
+        maxSpeed = None
+        
+    return maxSpeed
+        
 
-
-def findSpecificMaxSpeed(block_):
+def findManualMaxSpeed(block_):
     reProductName = re.search(r'^ProductName=(.+)', block_, re.I | re.M)
 
     if reProductName:
-        for i in maxSpeedExclusions:
+        for i in manualMaxSpeed:
             if reProductName.group(1).strip() == i[0]:
                 return i[1]
     else:
         return None
         
         
-def findState(modes_, block, p_split_):
+def findState(modes_, block, allBlocks_):
 
     sender = []
 
@@ -265,25 +267,27 @@ def findState(modes_, block, p_split_):
     currentSpeed = findSpeed(block)
     if currentSpeed:
         currentSpeed = int(currentSpeed)
+        
+    maxSpeed_out = findMaxSpeed(modes_, block)
 
     if isBridge(block):
         state = 'BRIDGE'
     elif not currentSpeed:
-        hypervMac = findHypervMAC(p_split_)
+        hypervMac = findHypervMAC(allBlocks_)
         if hypervMac:
-            raw_ifID = findVirtual_ifID(p_split_, hypervMac)
+            raw_ifID = findVirtual_ifID(allBlocks_, hypervMac)
             physical_ifID = rawToFull_ifID(raw_ifID)
             
             state = 'HYPERV_PHYSICAL_POINTS_TO_%s' % physical_ifID
             
-            speed = findSpeedByID(p_split_, raw_ifID)
+            speed = findSpeedByID(allBlocks_, raw_ifID)
 
             sender.append('"%s" hw.net.wmi.Speed[%s] "%s"' % (host, ifID, speed))
         else:
             state = 'NO_SPEED'
     elif isHyperV(block):
             virtualMac = findMac(block)
-            raw_ifID = findPhysical_ifID(p_split_, virtualMac)
+            raw_ifID = findPhysical_ifID(allBlocks_, virtualMac)
             virtual_ifID = rawToFull_ifID(raw_ifID)
             
             state = 'HYPERV_VIRTUAL_POINTS_TO_%s' % virtual_ifID
@@ -292,7 +296,9 @@ def findState(modes_, block, p_split_):
         state = 'NO_MODES'
     elif currentSpeed == 9223372036854775807:
         state = 'INVALID_SPEED_OVERFLOW'
-    elif isDegraded(modes_, currentSpeed, block):
+    elif maxSpeed_out < currentSpeed:
+        state = 'SPEED_HIGHER_THAN_MODE'
+    elif not maxSpeed_out == currentSpeed:
         state = 'DEGRADED'
     else:
         state = 'PROCESSED'
@@ -318,9 +324,9 @@ def isHyperV(block_):
         return False
     
     
-def findHypervMAC(p_split_):
+def findHypervMAC(allBlocks_):
 
-    for b in p_split_: 
+    for b in allBlocks_: 
         if isHyperV(b):
             return findMac(b)
 
@@ -335,10 +341,10 @@ def findMac(block_):
         return None
     
     
-def findPhysical_ifID(p_split_, mac):
+def findPhysical_ifID(allBlocks_, mac):
     matchMac = r'^MACAddress=%s$' % mac
 
-    for b in p_split_:
+    for b in allBlocks_:
         reService = re.search(r'^ServiceName=VMSMP$', b, re.I | re.M)
         reMac = re.search(matchMac, b, re.I | re.M)
         if  (    reMac and
@@ -349,10 +355,10 @@ def findPhysical_ifID(p_split_, mac):
     return None
         
 
-def findVirtual_ifID(p_split_, mac):
+def findVirtual_ifID(allBlocks_, mac):
     matchMac = r'^MACAddress=%s$' % mac
 
-    for b in p_split_:
+    for b in allBlocks_:
         reService = re.search(r'^ServiceName=VMSMP$', b, re.I | re.M)
         reMac = re.search(matchMac, b, re.I | re.M)
         if  (reMac and
@@ -371,10 +377,10 @@ def findSpeed(block_):
         return None
         
         
-def findSpeedByID(p_split_, raw_ifID_):
+def findSpeedByID(allBlocks_, raw_ifID_):
     ifMatch = '^DeviceID=%s$' % raw_ifID_
 
-    for b in p_split_:
+    for b in allBlocks_:
         reID = re.search(ifMatch, b, re.M | re.I)
         if  reID:
             return findSpeed(b)
@@ -391,8 +397,8 @@ if __name__ == '__main__':
     senderData = []
     
     p_out = wmiNetRun(cmd.split())
-    p_split = splitBlocks(p_out[0])
-    for b in p_split:
+    allBlocks = splitBlocks(p_out[0])
+    for b in allBlocks:
         ifID = rawToFull_ifID(findRaw_ifID(b))
         
         findValuesInWMI_out = findValuesInWMI(ifID, b)
@@ -418,7 +424,7 @@ if __name__ == '__main__':
         if findValuesInWMI_out:
             senderData.extend(findValuesInWMI_out)
             currentSpeed = findSpeed(b)
-            connState = findState(senderModes[1], b, p_split)
+            connState = findState(senderModes[1], b, allBlocks)
             senderData.extend(connState)
 
     link = 'https://github.com/nobodysu/zabbix-hardware'
