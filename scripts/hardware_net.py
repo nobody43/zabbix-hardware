@@ -10,7 +10,6 @@ senderPath =   r'C:\zabbix-agent\bin\win32\zabbix_sender.exe'
 ## Advanced configuration ##
 
 timeout          = '80'   # Between LLD and data sending
-globalTimeout    = 25     # Maximum execution time, seconds
 heavyDebug       = False
 
 cmd = 'wmic path Win32_NetworkAdapter where PhysicalAdapter=TRUE get /value'
@@ -58,7 +57,7 @@ def wmiNetRun(cmd_):
     err = None
 
     try:
-        p = subprocess.check_output(cmd_, universal_newlines=True, timeout=globalTimeout)
+        p = subprocess.check_output(cmd_, universal_newlines=True)
 
     except subprocess.TimeoutExpired:
         err = 'TIMEOUT'
