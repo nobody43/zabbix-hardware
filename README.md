@@ -3,6 +3,7 @@ Current features:
 - CPU hardware info with multiprocessor support for Windows through WMI
 - RAM hardware info for Windows through WMI
 - BIOS hardware info for Windows through WMI
+- Network interfaces info for Windows through WMI
 
 Requires Python 3.1+. It must be installed for all users and mentioned in PATH.
 
