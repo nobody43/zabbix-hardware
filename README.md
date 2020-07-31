@@ -12,6 +12,8 @@ Requires Python 3.1+. It must be installed for all users and mentioned in PATH.
 
 [CPU Latest data](https://raw.githubusercontent.com/nobodysu/zabbix-hardware/master/screenshots/hardware-cpu-items.png)
 
+[NET Latest data](https://raw.githubusercontent.com/nobodysu/zabbix-hardware/master/screenshots/hardware-net-items.png)
+
 [BIOS Latest data](https://raw.githubusercontent.com/nobodysu/zabbix-hardware/master/screenshots/hardware-bios-items.png)
 
 ## Testing
