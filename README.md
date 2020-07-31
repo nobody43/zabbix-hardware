@@ -1,9 +1,9 @@
 # zabbix-hardware
 Current features:
-- CPU hardware info with multiprocessor support for Windows through WMI
 - RAM hardware info for Windows through WMI
-- BIOS hardware info for Windows through WMI
+- CPU hardware info with multiprocessor support for Windows through WMI
 - Network interfaces info for Windows through WMI
+- BIOS hardware info for Windows through WMI
 
 Requires Python 3.1+. It must be installed for all users and mentioned in PATH.
 
@@ -23,7 +23,7 @@ server$ zabbix_get -s 192.0.2.1 -k hw.cpu.discovery[get,"Example host"]
 server$ zabbix_get -s 192.0.2.1 -k hw.net.discovery[get,"Example host"]
 server$ zabbix_get -s 192.0.2.1 -k hw.bios[get,"Example host"]
 ```
-Default operation mode. Displays json that server should get, detaches, then waits and sends data with zabbix-sender. `Example host` is your `Host name` field in zabbix.
+Default operation mode. Displays json that server should get, detaches, then waits and sends data with zabbix-sender. `Example host` is your `Host name` field in zabbix. You might want to use nonexistent name for testing to avoid unnecessary database pollution (client introduces itself with this name and false names will be ignored).
 <br /><br />
 
 ```bash
