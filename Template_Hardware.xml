@@ -1483,7 +1483,7 @@
                         <formula/>
                         <conditions/>
                     </filter>
-                    <lifetime>1</lifetime>
+                    <lifetime>7</lifetime>
                     <description/>
                     <item_prototypes>
                         <item_prototype>
@@ -2452,7 +2452,7 @@
                         <formula/>
                         <conditions/>
                     </filter>
-                    <lifetime>0</lifetime>
+                    <lifetime>7</lifetime>
                     <description/>
                     <item_prototypes>
                         <item_prototype>
@@ -2819,7 +2819,7 @@
                         <formula/>
                         <conditions/>
                     </filter>
-                    <lifetime>0</lifetime>
+                    <lifetime>7</lifetime>
                     <description/>
                     <item_prototypes>
                         <item_prototype>
