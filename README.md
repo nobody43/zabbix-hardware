@@ -37,3 +37,9 @@ or locally:
 client> python "C:\zabbix-agent\scripts\hardware_net.py" getverb "Example host"
 ```
 Verbose mode. Does not detaches or prints LLD. Lists all items sent to zabbix-sender, also it is possible to see sender output in this mode.
+
+These scripts were tested to work with following configurations:
+
+- Windows 7 / Server (3.0, 5.0) / Agent (3.0, 5.0) / Python (3.1-3.8)
+
+- Windows Server 2012 / Zabbix 3.0 / Python 3.7
