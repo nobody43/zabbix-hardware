@@ -5,7 +5,7 @@ Current features:
 - Network interfaces info for Windows through WMI
 - BIOS hardware info for Windows through WMI
 
-Requires Python 3.1+. It must be mentioned [in PATH](https://github.com/nobodysu/zabbix-hardware/blob/master/screenshots/python-installation1.png) and installed for [all users](https://github.com/nobodysu/zabbix-hardware/blob/master/screenshots/python-installation2.png).
+Requires [Python 3.1+](https://www.python.org/downloads/windows/). It must be mentioned [in PATH](https://github.com/nobodysu/zabbix-hardware/blob/master/screenshots/python-installation1.png) and installed for [all users](https://github.com/nobodysu/zabbix-hardware/blob/master/screenshots/python-installation2.png).
 
 ## Screenshots
 [RAM Latest data](https://raw.githubusercontent.com/nobodysu/zabbix-hardware/master/screenshots/hardware-ram-items.png)
