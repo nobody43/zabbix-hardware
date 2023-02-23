@@ -40,8 +40,6 @@ Verbose mode. Does not detaches or prints LLD. Lists all items sent to zabbix-se
 
 These scripts were tested to work with following configurations:
 
-- Windows 7 / Server (3.0, 5.0) / Agent (3.0, 5.0) / Python (3.1-3.8)
-
-- Windows 10 / Server 6.0 / Agent 4.0 / Python (3.1-3.9)
-
-- Windows Server 2012 / Server 6.0 / Agent 4.0 / Python 3.7
+- Windows 10 / Server 6.0 / Agent 4.0 / Python (3.1-3.11)
+- Windows Server 2012 / Server 6.0 / Agent 4.0 / Python 3.11
+- Windows 7 / Server (5.0, 6.0) / Agent (4.0, 5.0) / Python (3.1-3.8)
