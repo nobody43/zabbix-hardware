@@ -1,15 +1,15 @@
 ## Installation instructions: https://github.com/nobodysu/zabbix-hardware ##
 
-senderPyPath = r'C:\zabbix-agent\scripts\sender_wrapper.py'
+senderPyPath = r'C:\Program Files\Zabbix Agent\scripts\sender_wrapper.py'
 
-agentConf =    r'C:\zabbix_agentd.conf'
+agentConf    = r'C:\Program Files\Zabbix Agent\zabbix_agentd.conf'
 
-senderPath =   r'C:\zabbix-agent\bin\win32\zabbix_sender.exe'
+senderPath   = r'C:\Program Files\Zabbix Agent\zabbix_sender.exe'
 
 
 ## Advanced configuration ##
 
-timeout          = '80'   # Between LLD and data sending
+delay            = '50'   # Between LLD and data sending
 globalTimeout    = 25     # Maximum execution time, seconds
 unknownSlotShift = 1000
 heavyDebug       = False
@@ -249,4 +249,4 @@ if __name__ == '__main__':
 
     link = 'https://github.com/nobodysu/zabbix-hardware'
     sendStatusKey = 'hw.ram.info[SendStatus]'
-    processData(senderData, jsonData, agentConf, senderPyPath, senderPath, timeout, host, link, sendStatusKey)
+    processData(senderData, jsonData, agentConf, senderPyPath, senderPath, delay, host, link, sendStatusKey)
