@@ -1,16 +1,16 @@
 ## Installation instructions: https://github.com/nobodysu/zabbix-hardware ##
 
-senderPyPath = r'C:\zabbix-agent\scripts\sender_wrapper.py'
+senderPyPath = r'C:\Program Files\Zabbix Agent\scripts\sender_wrapper.py'
 
-agentConf =    r'C:\zabbix_agentd.conf'
+agentConf    = r'C:\Program Files\Zabbix Agent\zabbix_agentd.conf'
 
-senderPath =   r'C:\zabbix-agent\bin\win32\zabbix_sender.exe'
+senderPath   = r'C:\Program Files\Zabbix Agent\zabbix_sender.exe'
 
 
 ## Advanced configuration ##
 
-timeout          = '80'   # Between LLD and data sending
-heavyDebug       = False
+delay          = '50'   # Between LLD and data sending
+heavyDebug     = False
 
 cmd = 'wmic path Win32_NetworkAdapter where PhysicalAdapter=TRUE get /value'
 
@@ -428,4 +428,4 @@ if __name__ == '__main__':
 
     link = 'https://github.com/nobodysu/zabbix-hardware'
     sendStatusKey = 'hw.net.info[SendStatus]'
-    processData(senderData, jsonData, agentConf, senderPyPath, senderPath, timeout, host, link, sendStatusKey)
+    processData(senderData, jsonData, agentConf, senderPyPath, senderPath, delay, host, link, sendStatusKey)

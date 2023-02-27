@@ -1,10 +1,10 @@
 ## Installation instructions: https://github.com/nobodysu/zabbix-hardware ##
 
-senderPyPath = r'C:\zabbix-agent\scripts\sender_wrapper.py'
+senderPyPath = r'C:\Program Files\Zabbix Agent\scripts\sender_wrapper.py'
 
-agentConf = r'C:\zabbix_agentd.conf'
+agentConf    = r'C:\Program Files\Zabbix Agent\zabbix_agentd.conf'
 
-senderPath = r'C:\zabbix-agent\bin\win32\zabbix_sender.exe'
+senderPath   = r'C:\Program Files\Zabbix Agent\zabbix_sender.exe'
 
 ## Advanced configuration ##
 
@@ -233,8 +233,8 @@ if __name__ == '__main__':
     p_out = p_out_once[0]
     senderData = findValues(p_out)
     
-    timeout = '0'
+    delay = '0'
 
     link = 'https://github.com/nobodysu/zabbix-hardware'
     sendStatusKey = 'hw.bios.info[SendStatus]'
-    processData(senderData, '', agentConf, senderPyPath, senderPath, timeout, host, link, sendStatusKey)
+    processData(senderData, '', agentConf, senderPyPath, senderPath, delay, host, link, sendStatusKey)

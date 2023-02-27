@@ -1,20 +1,20 @@
 ## Installation instructions: https://github.com/nobodysu/zabbix-hardware ##
 
-senderPyPath = r'C:\zabbix-agent\scripts\sender_wrapper.py'
+senderPyPath = r'C:\Program Files\Zabbix Agent\scripts\sender_wrapper.py'
 
-agentConf = r'C:\zabbix_agentd.conf'
+agentConf    = r'C:\Program Files\Zabbix Agent\zabbix_agentd.conf'
 
-senderPath = r'C:\zabbix-agent\bin\win32\zabbix_sender.exe'
+senderPath   = r'C:\Program Files\Zabbix Agent\zabbix_sender.exe'
 
 ## Advanced configuration ##
 
-timeout = '80'
+delay = '50'
 
 cmd = ['wmic', 'CPU', 'list', 'full']
 
 globalTimeout = 25
 unknownCPUshift = 1000
- 
+
 keysandRegexp = (
     ('hw.cpu.AddressWidth',                 r'^AddressWidth\=(.+)'),
     ('hw.cpu.Architecture',                 r'^Architecture\=(.+)'),
@@ -375,4 +375,4 @@ if __name__ == '__main__':
 
     link = 'https://github.com/nobodysu/zabbix-hardware'
     sendStatusKey = 'hw.cpu.info[SendStatus]'
-    processData(senderData, jsonData, agentConf, senderPyPath, senderPath, timeout, host, link, sendStatusKey)
+    processData(senderData, jsonData, agentConf, senderPyPath, senderPath, delay, host, link, sendStatusKey)
