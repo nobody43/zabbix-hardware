@@ -5,16 +5,16 @@ Current features:
 - Network interfaces info for Windows through WMI
 - BIOS hardware info for Windows through WMI
 
-Requires [Python 3.1+](https://www.python.org/downloads/windows/). It must be mentioned [in PATH](https://github.com/nobodysu/zabbix-hardware/blob/master/screenshots/python-installation1.png) and installed for [all users](https://github.com/nobodysu/zabbix-hardware/blob/master/screenshots/python-installation2.png).
+Requires [Python 3.1+](https://www.python.org/downloads/windows/). It must be mentioned [in PATH](https://github.com/nobody43/zabbix-hardware/blob/master/screenshots/python-installation1.png) and installed for [all users](https://github.com/nobody43/zabbix-hardware/blob/master/screenshots/python-installation2.png).
 
 ## Screenshots
-[RAM Latest data](https://raw.githubusercontent.com/nobodysu/zabbix-hardware/master/screenshots/hardware-ram-items.png)
+[RAM Latest data](https://raw.githubusercontent.com/nobody43/zabbix-hardware/master/screenshots/hardware-ram-items.png)
 
-[CPU Latest data](https://raw.githubusercontent.com/nobodysu/zabbix-hardware/master/screenshots/hardware-cpu-items.png)
+[CPU Latest data](https://raw.githubusercontent.com/nobody43/zabbix-hardware/master/screenshots/hardware-cpu-items.png)
 
-[NET Latest data](https://raw.githubusercontent.com/nobodysu/zabbix-hardware/master/screenshots/hardware-net-items.png)
+[NET Latest data](https://raw.githubusercontent.com/nobody43/zabbix-hardware/master/screenshots/hardware-net-items.png)
 
-[BIOS Latest data](https://raw.githubusercontent.com/nobodysu/zabbix-hardware/master/screenshots/hardware-bios-items.png)
+[BIOS Latest data](https://raw.githubusercontent.com/nobody43/zabbix-hardware/master/screenshots/hardware-bios-items.png)
 
 ## Testing
 ```bash
@@ -34,7 +34,7 @@ server$ zabbix_get -s 192.0.2.1 -k hw.bios[getverb,"Example host"]
 ```
 or locally:
 ```cmd
-client> python "C:\zabbix-agent\scripts\hardware_net.py" getverb "Example host"
+client> python "C:\Program Files\Zabbix Agent\scripts\hardware_net_wmi.py" getverb "Example host"
 ```
 Verbose mode. Does not detaches or prints LLD. Lists all items sent to zabbix-sender, also it is possible to see sender output in this mode.
 
