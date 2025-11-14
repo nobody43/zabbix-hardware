@@ -28,14 +28,14 @@ ignoredServiceNames = (
 
 # re.I | re.M
 speedFormat = (
-    ('^10(?:\s+)?Mb',        10000000),
-    ('^100(?:\s+)?Mb',       100000000),
-    ('^1(?:\.0)?(?:\s+)?Gb', 1000000000),
-    ('^10(?:\s+)?Gb',        10000000000),
-    ('^25(?:\s+)?Gb',        25000000000),
-    ('^40(?:\s+)?Gb',        40000000000),
-    ('^50(?:\s+)?Gb',        50000000000),
-    ('^100(?:\s+)?Gb',       100000000000),
+    (r'^10(?:\s+)?Mb',        10000000),
+    (r'^100(?:\s+)?Mb',       100000000),
+    (r'^1(?:\.0)?(?:\s+)?Gb', 1000000000),
+    (r'^10(?:\s+)?Gb',        10000000000),
+    (r'^25(?:\s+)?Gb',        25000000000),
+    (r'^40(?:\s+)?Gb',        40000000000),
+    (r'^50(?:\s+)?Gb',        50000000000),
+    (r'^100(?:\s+)?Gb',       100000000000),
 )
 
 manualMaxSpeed = (
@@ -429,3 +429,4 @@ if __name__ == '__main__':
     link = 'https://github.com/nobodysu/zabbix-hardware'
     sendStatusKey = 'hw.net.info[SendStatus]'
     processData(senderData, jsonData, agentConf, senderPyPath, senderPath, delay, host, link, sendStatusKey)
+
